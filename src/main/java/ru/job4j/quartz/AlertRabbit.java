@@ -17,11 +17,8 @@ public class AlertRabbit implements AutoCloseable {
 
     private Properties properties;
 
-    private int interval;
-
     public AlertRabbit(Properties properties) throws Exception {
         this.properties = properties;
-        this.interval = Integer.parseInt(properties.getProperty("rabbit.interval"));
         initConnection();
     }
 
@@ -62,6 +59,8 @@ public class AlertRabbit implements AutoCloseable {
 
     public static void main(String[] args) throws Exception {
         AlertRabbit alertRabbit = new AlertRabbit(initProperties());
+        int interval = Integer.parseInt(
+                alertRabbit.properties.getProperty("rabbit.interval"));
         try {
             List<Long> store = new ArrayList<>();
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
@@ -72,7 +71,7 @@ public class AlertRabbit implements AutoCloseable {
                     .usingJobData(data)
                     .build();
             SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(alertRabbit.interval)
+                    .withIntervalInSeconds(interval)
                     .repeatForever();
             Trigger trigger = newTrigger()
                     .startNow()
