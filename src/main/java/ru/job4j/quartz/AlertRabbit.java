@@ -40,16 +40,6 @@ public class AlertRabbit implements AutoCloseable {
         connection = DriverManager.getConnection(url, login, password);
     }
 
-    public void insert(Long createdDateTime) {
-        try (PreparedStatement statement =
-                     connection.prepareStatement("insert into rabbit(created_date) values (?)")) {
-            statement.setTimestamp(1, new Timestamp(createdDateTime));
-            statement.execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void close() throws Exception {
         if (connection != null) {
@@ -58,15 +48,13 @@ public class AlertRabbit implements AutoCloseable {
     }
 
     public static void main(String[] args) throws Exception {
-        AlertRabbit alertRabbit = new AlertRabbit(initProperties());
-        int interval = Integer.parseInt(
-                alertRabbit.properties.getProperty("rabbit.interval"));
-        try {
-            List<Long> store = new ArrayList<>();
+        try (AlertRabbit alertRabbit = new AlertRabbit(initProperties())) {
+            int interval = Integer.parseInt(
+                    alertRabbit.properties.getProperty("rabbit.interval"));
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
-            data.put("store", store);
+            data.put("connection", alertRabbit.connection);
             JobDetail job = newJob(Rabbit.class)
                     .usingJobData(data)
                     .build();
@@ -80,8 +68,6 @@ public class AlertRabbit implements AutoCloseable {
             scheduler.scheduleJob(job, trigger);
             Thread.sleep(10000);
             scheduler.shutdown();
-            System.out.println(String.format("store: %s", store));
-            store.stream().forEach(aLong -> alertRabbit.insert(aLong));
         } catch (SchedulerException se) {
             se.printStackTrace();
         }
@@ -95,9 +81,16 @@ public class AlertRabbit implements AutoCloseable {
 
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
-            System.out.println("Rabbit runs here ...");
-            List<Long> store = (List<Long>) context.getJobDetail().getJobDataMap().get("store");
-            store.add(System.currentTimeMillis());
+            System.out.println("Rabbit runs here. Inserting ...");
+            Connection connection = (Connection) context
+                    .getJobDetail().getJobDataMap().get("connection");
+            try (PreparedStatement statement =
+                         connection.prepareStatement("insert into rabbit(created_date) values (?)")) {
+                statement.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                statement.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
