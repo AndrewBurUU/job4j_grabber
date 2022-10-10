@@ -5,7 +5,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.job4j.grabber.utils.*;
+
 import java.io.IOException;
+import java.nio.*;
+import java.nio.charset.*;
+import java.time.*;
+import java.time.format.*;
 
 public class HabrCareerParse {
 
@@ -20,7 +26,9 @@ public class HabrCareerParse {
         rows.forEach(row -> {
             Element titleElement = row.select(".vacancy-card__title").first();
             Element linkElement = titleElement.child(0);
-            String vacancyName = titleElement.text();
+            String vacancyNameBadCoding = titleElement.text();
+            ByteBuffer byteBuffer = StandardCharsets.UTF_8.encode(vacancyNameBadCoding);
+            String vacancyName = new String(byteBuffer.array(), StandardCharsets.UTF_8);
             String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
             Element titleDate = row.select(".vacancy-card__date").first();
             Element linkDateElement = titleDate.child(0);
