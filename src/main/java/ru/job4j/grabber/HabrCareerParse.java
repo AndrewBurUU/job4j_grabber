@@ -12,12 +12,19 @@ import java.nio.*;
 import java.nio.charset.*;
 import java.time.*;
 import java.time.format.*;
+import java.util.*;
 
-public class HabrCareerParse {
+public class HabrCareerParse implements Parse {
 
     private static final String SOURCE_LINK = "https://career.habr.com";
 
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer", SOURCE_LINK);
+
+    private final DateTimeParser dateTimeParser;
+
+    public HabrCareerParse(DateTimeParser dateTimeParser) {
+        this.dateTimeParser = dateTimeParser;
+    }
 
     private void getPage(String pageLink) throws IOException {
         Connection connection = Jsoup.connect(pageLink);
@@ -46,8 +53,15 @@ public class HabrCareerParse {
         return res;
     }
 
+    @Override
+    public List<Post> list(String link) {
+        List<Post> postList = new ArrayList<>();
+        return postList;
+    }
+
     public static void main(String[] args) throws IOException {
-        HabrCareerParse habrCareerParse = new HabrCareerParse();
+        HabrCareerDateTimeParser habrCareerDateTimeParser = new HabrCareerDateTimeParser();
+        HabrCareerParse habrCareerParse = new HabrCareerParse(habrCareerDateTimeParser);
         System.out.println(habrCareerParse.retrieveDescription("https://career.habr.com/vacancies/1000102160"));
         /**
         for (int i = 1; i <= 5; i++) {
