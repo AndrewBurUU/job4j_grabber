@@ -35,13 +35,27 @@ public class HabrCareerParse {
         });
     }
 
+    private String retrieveDescription(String link) throws IOException {
+        String res = "";
+        Connection connection = Jsoup.connect(link);
+        Document document = connection.get();
+        Elements vacancyDescription = document.getElementsByClass("vacancy-description__text");
+        for (Element element: vacancyDescription) {
+            res += element.text();
+        }
+        return res;
+    }
+
     public static void main(String[] args) throws IOException {
         HabrCareerParse habrCareerParse = new HabrCareerParse();
+        System.out.println(habrCareerParse.retrieveDescription("https://career.habr.com/vacancies/1000102160"));
+        /**
         for (int i = 1; i <= 5; i++) {
             String pageLink = String.format(String.format("%s?page=%s", PAGE_LINK, i));
             System.out.println(pageLink);
             habrCareerParse.getPage(pageLink);
             System.out.println();
         }
+         */
     }
 }
