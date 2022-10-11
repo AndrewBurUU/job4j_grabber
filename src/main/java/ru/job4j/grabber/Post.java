@@ -29,6 +29,14 @@ public class Post {
         this.created = created;
     }
 
+    public Post(int id, String name, String link, String description, LocalDateTime created) {
+        this.id = id;
+        this.name = name;
+        this.link = link;
+        this.description = description;
+        this.created = created;
+    }
+
     public int getId() {
         return id;
     }
@@ -78,11 +86,11 @@ public class Post {
             return false;
         }
         Post post = (Post) o;
-        return id == post.id && Objects.equals(name, post.name) && Objects.equals(created, post.created);
+        return id == post.id && Objects.equals(link, post.link);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, created);
+        return Objects.hash(id, link);
     }
 }
