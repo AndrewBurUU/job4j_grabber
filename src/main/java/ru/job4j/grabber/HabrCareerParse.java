@@ -43,14 +43,10 @@ public class HabrCareerParse implements Parse {
     }
 
     private String retrieveDescription(String link) throws IOException {
-        String res = "";
         Connection connection = Jsoup.connect(link);
         Document document = connection.get();
-        Elements vacancyDescription = document.getElementsByClass("vacancy-description__text");
-        for (Element element: vacancyDescription) {
-            res += element.text();
-        }
-        return res;
+        Element row = document.selectFirst(".style-ugc");
+        return row.text();
     }
 
     @Override
@@ -70,6 +66,6 @@ public class HabrCareerParse implements Parse {
             habrCareerParse.getPage(pageLink);
             System.out.println();
         }
-         */
+        */
     }
 }
