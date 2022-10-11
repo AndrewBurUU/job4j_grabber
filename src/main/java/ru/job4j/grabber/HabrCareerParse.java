@@ -19,21 +19,29 @@ public class HabrCareerParse {
 
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer", SOURCE_LINK);
 
-    public static void main(String[] args) throws IOException {
-        Connection connection = Jsoup.connect(PAGE_LINK);
+    private void getPage(String pageLink) throws IOException {
+        Connection connection = Jsoup.connect(pageLink);
         Document document = connection.get();
         Elements rows = document.select(".vacancy-card__inner");
         rows.forEach(row -> {
             Element titleElement = row.select(".vacancy-card__title").first();
             Element linkElement = titleElement.child(0);
-            String vacancyNameBadCoding = titleElement.text();
-            ByteBuffer byteBuffer = StandardCharsets.UTF_8.encode(vacancyNameBadCoding);
-            String vacancyName = new String(byteBuffer.array(), StandardCharsets.UTF_8);
+            String vacancyName = titleElement.text();
             String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
             Element titleDate = row.select(".vacancy-card__date").first();
             Element linkDateElement = titleDate.child(0);
             String linkDate = String.format("%s", linkDateElement.attr("datetime"));
             System.out.printf("%s %s %s%n", vacancyName, link, linkDate);
         });
+    }
+
+    public static void main(String[] args) throws IOException {
+        HabrCareerParse habrCareerParse = new HabrCareerParse();
+        for (int i = 1; i <= 5; i++) {
+            String pageLink = String.format(String.format("%s?page=%s", PAGE_LINK, i));
+            System.out.println(pageLink);
+            habrCareerParse.getPage(pageLink);
+            System.out.println();
+        }
     }
 }
