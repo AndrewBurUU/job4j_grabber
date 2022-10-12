@@ -22,6 +22,9 @@ public class Post {
 
     private LocalDateTime created;
 
+    public Post() {
+    }
+
     public Post(String name, String link, String description, LocalDateTime created) {
         this.name = name;
         this.link = link;
@@ -92,5 +95,16 @@ public class Post {
     @Override
     public int hashCode() {
         return Objects.hash(id, link);
+    }
+
+    @Override
+    public String toString() {
+        return "Post{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + ", link='" + link + '\''
+                + ", description='" + description + '\''
+                + ", created=" + created
+                + '}';
     }
 }
