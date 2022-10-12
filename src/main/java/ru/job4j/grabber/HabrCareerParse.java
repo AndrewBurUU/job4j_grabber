@@ -6,6 +6,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.job4j.grabber.utils.*;
+
+import java.io.*;
 import java.util.*;
 
 public class HabrCareerParse implements Parse {
@@ -14,9 +16,9 @@ public class HabrCareerParse implements Parse {
 
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
 
-    private final DateTimeParser dateTimeParser;
+    private static final int PAGE_COUNT = 5;
 
-    private static final int PAGE_COUNT = 1;
+    private final DateTimeParser dateTimeParser;
 
     public HabrCareerParse(DateTimeParser dateTimeParser) {
         this.dateTimeParser = dateTimeParser;
@@ -28,7 +30,7 @@ public class HabrCareerParse implements Parse {
             Document document = connection.get();
             Element row = document.selectFirst(".style-ugc");
             return row.text();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -41,10 +43,9 @@ public class HabrCareerParse implements Parse {
         Element cardDate = row.select(".vacancy-card__date").first();
         Element dateElement = cardDate.child(0);
         String vacancyDate = String.format("%s", dateElement.attr("datetime"));
-        HabrCareerDateTimeParser habrCareerDateTimeParser = new HabrCareerDateTimeParser();
         return new Post(vacancyName, vacancyDescriptionLink,
                 retrieveDescription(vacancyDescriptionLink),
-                habrCareerDateTimeParser.parse(vacancyDate)
+                dateTimeParser.parse(vacancyDate)
         );
     }
 
@@ -59,7 +60,7 @@ public class HabrCareerParse implements Parse {
                 Elements rows = document.select(".vacancy-card__inner");
                 rows.forEach(row -> postList.add(getPost(row)));
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
         return postList;
