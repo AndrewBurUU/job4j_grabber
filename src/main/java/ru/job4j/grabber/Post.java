@@ -27,17 +27,9 @@ public class Post {
 
     public Post(String name, String link, String description, LocalDateTime created) {
         this.name = name;
-        if (link.length() > 255) {
-            this.link = link.substring(0, 255);
-        } else {
-            this.link = link;
-        }
-        if (description.length() > 255) {
-            this.description = description.substring(0, 255);
-        } else {
-            this.description = description;
-        }
-        this.created = created;
+        this.link = link;
+        this.description = description;
+         this.created = created;
     }
 
     public Post(int id, String name, String link, String description, LocalDateTime created) {
