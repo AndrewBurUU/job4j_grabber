@@ -6,8 +6,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.job4j.grabber.utils.*;
-
-import java.io.IOException;
 import java.util.*;
 
 public class HabrCareerParse implements Parse {
