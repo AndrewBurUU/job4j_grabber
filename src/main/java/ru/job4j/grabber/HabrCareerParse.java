@@ -24,14 +24,18 @@ public class HabrCareerParse implements Parse {
         this.dateTimeParser = dateTimeParser;
     }
 
-    private String retrieveDescription(String link) throws IOException {
-        Connection connection = Jsoup.connect(link);
-        Document document = connection.get();
-        Element row = document.selectFirst(".style-ugc");
-        return row.text();
+    private String retrieveDescription(String link) {
+        try {
+            Connection connection = Jsoup.connect(link);
+            Document document = connection.get();
+            Element row = document.selectFirst(".style-ugc");
+            return row.text();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
-    private Post getPost(Element row) throws IOException {
+    private Post getPost(Element row) {
         Element cardTitle = row.select(".vacancy-card__title").first();
         Element vacancyLinkElement = cardTitle.child(0);
         String vacancyName = cardTitle.text();
@@ -55,16 +59,10 @@ public class HabrCareerParse implements Parse {
                 Connection connection = Jsoup.connect(pageLink);
                 Document document = connection.get();
                 Elements rows = document.select(".vacancy-card__inner");
-                rows.forEach(row -> {
-                    try {
-                        postList.add(getPost(row));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+                rows.forEach(row -> postList.add(getPost(row)));
             }
-        } catch (IllegalArgumentException | IOException illegal) {
-            System.out.printf("Exception: %s%n%n", illegal.getMessage());
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
         }
         return postList;
     }
