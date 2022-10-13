@@ -13,10 +13,16 @@ public class PsqlStore implements Store, AutoCloseable {
     public PsqlStore(Properties cfg) {
         try {
             Class.forName(cfg.getProperty("driver"));
-            String url = cfg.getProperty("url");
-            String login = cfg.getProperty("username");
-            String password = cfg.getProperty("password");
-            cnn = DriverManager.getConnection(url, login, password);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+
+        try (Connection cn = DriverManager.getConnection(
+                cfg.getProperty("url"),
+                cfg.getProperty("username"),
+                cfg.getProperty("password"))
+        ) {
+            cnn = cn;
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
