@@ -65,9 +65,4 @@ public class HabrCareerParse implements Parse {
         }
         return postList;
     }
-
-    @Override
-    public String getPageLink() {
-        return PAGE_LINK;
-    }
 }
