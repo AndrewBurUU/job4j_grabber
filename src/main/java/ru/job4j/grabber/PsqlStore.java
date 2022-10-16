@@ -13,16 +13,10 @@ public class PsqlStore implements Store, AutoCloseable {
     public PsqlStore(Properties cfg) {
         try {
             Class.forName(cfg.getProperty("driver"));
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-
-        try (Connection cn = DriverManager.getConnection(
-                cfg.getProperty("url"),
-                cfg.getProperty("username"),
-                cfg.getProperty("password"))
-        ) {
-            cnn = cn;
+            cnn = DriverManager.getConnection(
+                    cfg.getProperty("url"),
+                    cfg.getProperty("username"),
+                    cfg.getProperty("password"));
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -97,22 +91,23 @@ public class PsqlStore implements Store, AutoCloseable {
         try (InputStream in = PsqlStore.class.getClassLoader().getResourceAsStream("post.properties")) {
             Properties config = new Properties();
             config.load(in);
-            PsqlStore psqlStore = new PsqlStore(config);
-            HabrCareerDateTimeParser habrCareerDateTimeParser = new HabrCareerDateTimeParser();
-            psqlStore.save(new Post(
-                    "Team lead Android-разработки (VK Teams)",
-                    "https://career.habr.com/vacancies/1000105222",
-                    "Разработчик мобильных приложений, Ведущий (Lead)",
-                    habrCareerDateTimeParser.parse("2022-10-11T17:50:44+03:00")
-            ));
-            psqlStore.save(new Post(
-                    "Старший Java-разработчик",
-                    "https://career.habr.com/vacancies/1000105220",
-                    "Бэкенд разработчик, Старший (Senior)",
-                    habrCareerDateTimeParser.parse("2022-10-11T17:50:18+03:00")
-            ));
-            psqlStore.getAll().forEach(post -> System.out.println(post));
-            System.out.println(psqlStore.findById(1));
+            try (PsqlStore psqlStore = new PsqlStore(config)) {
+                HabrCareerDateTimeParser habrCareerDateTimeParser = new HabrCareerDateTimeParser();
+                psqlStore.save(new Post(
+                        "Team lead Android-разработки (VK Teams)",
+                        "https://career.habr.com/vacancies/1000105222",
+                        "Разработчик мобильных приложений, Ведущий (Lead)",
+                        habrCareerDateTimeParser.parse("2022-10-11T17:50:44+03:00")
+                ));
+                psqlStore.save(new Post(
+                        "Старший Java-разработчик",
+                        "https://career.habr.com/vacancies/1000105220",
+                        "Бэкенд разработчик, Старший (Senior)",
+                        habrCareerDateTimeParser.parse("2022-10-11T17:50:18+03:00")
+                ));
+                psqlStore.getAll().forEach(post -> System.out.println(post));
+                System.out.println(psqlStore.findById(1));
+            }
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
