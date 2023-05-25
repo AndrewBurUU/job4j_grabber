@@ -16,4 +16,4 @@
 2. Просмотр вакансий в браузере: http://localhost:9000/?msg=Hello
 
 # Контакты
-Telegram: @andrew76k
+andrew76k@rambler.ru
